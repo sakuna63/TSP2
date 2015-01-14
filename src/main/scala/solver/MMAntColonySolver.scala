@@ -47,7 +47,6 @@ class MMAntColonySolver(m:Int, alpha:Int, beta:Int, rho:Double, bestP:Double, se
 
     while (count < 1000) {
       val ants = for(i <- 1 to m) yield createAnt(pheromones, problem)
-      pheromones = refreshPheromone(pheromones, ants, bestSolution)
 
       val solution = ants.minBy(_._2)
       if (bestSolution == null || solution._2 < bestSolution._2) {
@@ -58,6 +57,7 @@ class MMAntColonySolver(m:Int, alpha:Int, beta:Int, rho:Double, bestP:Double, se
         count += 1
       }
       distances = distances :+ bestSolution._2
+      pheromones = refreshPheromone(pheromones, ants, bestSolution)
     }
 
     outputCSV(problem, distances)
