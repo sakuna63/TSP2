@@ -16,7 +16,7 @@ class AntColonySpec extends FlatSpec with Matchers {
     val cityNum = problem.cities.length
     val solver = new AntColonySolver(cityNum, 1, 2, 0.5, 113)
     val pheromones = Array.fill(cityNum, cityNum)(0.5)
-    val distances = Array.fill(cityNum, cityNum)(10.0)
+    val distances = Array.fill(cityNum, cityNum)(10)
     val selectedCities = Array(1,2,3)
     val base = 3
   }

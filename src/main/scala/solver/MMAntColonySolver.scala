@@ -11,9 +11,9 @@ import scala.collection.immutable.IndexedSeq
 class MMAntColonySolver(m:Int, alpha:Int, beta:Int, rho:Double, bestP:Double, seed:Long)
   extends AntColonySolver(m:Int, alpha:Int, beta:Int, rho:Double, seed:Long) {
 
-  override def refreshPheromone(pheromones: Array[Array[Double]],
-                                pathAndDistances: IndexedSeq[(Array[Int], Double)],
-                                 bestSolution: (Array[Int], Double)): Array[Array[Double]] = {
+  def refreshPheromone(pheromones: Array[Array[Double]],
+                       pathAndDistances: IndexedSeq[(Array[Int], Double)],
+                       bestSolution: (Array[Int], Double)): Array[Array[Double]] = {
 
     def slash(value: Double, min: Double, max: Double) = if (value > max) max else if (value < min) min else value
     val n = pheromones.length
@@ -25,7 +25,7 @@ class MMAntColonySolver(m:Int, alpha:Int, beta:Int, rho:Double, bestP:Double, se
     pheromones.zipWithIndex.map({ case(arr, i) =>
       arr.zipWithIndex.map({ case(p, l) =>
         // τ_ij_best
-        val t: Double = if (best._1(i) == l || best._1(l) == i ) 1.0 / _._2 else 0.0
+        val t: Double = if (best._1(i) == l || best._1(l) == i ) 1.0 / best._2 else 0.0
         slash((1 - rho) * p + t, minT, maxT)
       })
     })

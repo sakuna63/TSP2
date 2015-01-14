@@ -30,8 +30,8 @@ object Main {
 
 //    val results = directory.listFiles().map(f => {
     val results = for (f <- directory.listFiles()) yield {
-      def average(distances: Array[Double]) = distances.sum / distances.size
-      def standardDeviation(distances: Array[Double]) = {
+      def average(distances: Array[Int]) = distances.sum.toDouble / distances.size
+      def standardDeviation(distances: Array[Int]) = {
         val ave = average(distances)
         math.sqrt(distances.map(_ - ave).map(math.pow(_, 2)).sum / distances.size)
       }

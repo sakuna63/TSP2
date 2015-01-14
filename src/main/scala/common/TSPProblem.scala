@@ -24,12 +24,12 @@ class TSPProblem(file: File) {
       })
     cities.toArray
   }
-  val distance: Array[Array[Double]] = {
-    val distance = new Array[Array[Double]](cities.length)
+  val distance: Array[Array[Int]] = {
+    val distance = new Array[Array[Int]](cities.length)
     cities.zipWithIndex.foreach({ case ((x1, y1), i) =>
-      distance(i) = new Array[Double](cities.length)
+      distance(i) = new Array[Int](cities.length)
       cities.zipWithIndex.foreach({ case ((x2, y2), j) =>
-        distance(i)(j) = if (i == j) -1 else math.sqrt(math.pow(x1 - x2, 2) + math.pow(y1 - y2, 2))
+        distance(i)(j) = if (i == j) -1 else (math.sqrt(math.pow(x1 - x2, 2) + math.pow(y1 - y2, 2)) + 0.5).toInt
       })
     })
     distance

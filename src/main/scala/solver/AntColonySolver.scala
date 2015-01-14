@@ -14,7 +14,7 @@ import scala.util.Random
 class AntColonySolver(m:Int, alpha:Int, beta:Int, rho:Double, seed:Long) extends Solver {
   val rnd = new Random(seed)
 
-  def toProbabilities(pheromones: Array[Double], selectedCities: Array[Int], distances: Array[Double]): Array[(Double, Int)] = {
+  def toProbabilities(pheromones: Array[Double], selectedCities: Array[Int], distances: Array[Int]): Array[(Double, Int)] = {
     pheromones.zipWithIndex
       .filter({ case(p, i) => !selectedCities.contains(i)})
       .map({ case(p, i) =>
@@ -24,7 +24,7 @@ class AntColonySolver(m:Int, alpha:Int, beta:Int, rho:Double, seed:Long) extends
       })
   }
 
-  def selectRoute(base: Int, selectedCities: Array[Int], pheromones: Array[Array[Double]], distances: Array[Array[Double]]): Int = {
+  def selectRoute(base: Int, selectedCities: Array[Int], pheromones: Array[Array[Double]], distances: Array[Array[Int]]): Int = {
     val probabilities = toProbabilities(pheromones(base), selectedCities, distances(base))
     val threshold = rnd.nextDouble() * probabilities.map(_._1).sum
     var tempSum = 0.0
