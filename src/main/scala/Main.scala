@@ -25,7 +25,7 @@ object Main {
 
     val eil51 = new File(directory, "eil51.tsp")
     val problem = new TSPProblem(eil51)
-    val solver = createSolver(problem.cities.length, ALPHA, RHO, P_BEST)(SEEDS(0))
+    val solver = new MMAntColonySolver(problem.cities.length, ALPHA, _:Int, RHO, P_BEST, SEEDS(0))
     val optimalBeta = SEEDS.map(beta => (Calc.adjacentDis(problem, solver(beta).solve(problem)), beta)).minBy(_._1)._2
 
 //    val results = directory.listFiles().map(f => {
@@ -37,7 +37,7 @@ object Main {
       }
 
       val problem = new TSPProblem(f)
-      val solver = createSolver(problem.cities.length, ALPHA, RHO, P_BEST)(_)(beta = optimalBeta)
+      val solver = new MMAntColonySolver(problem.cities.length, ALPHA, optimalBeta, RHO, P_BEST, _:Long)
 
       val result = for (seed <- SEEDS) yield (Calc.adjacentDis(problem, solver(seed).solve(problem)), seed)
       val optimalSeed = result.minBy(_._1)._2
@@ -49,9 +49,5 @@ object Main {
     val writer = CSVWriter.open("results.csv")
     writer.writeAll(results.map(_.productIterator.toSeq))
     writer.close()
-  }
-
-  def createSolver(m:Int, alpha:Int, rho:Double, bestP:Double)(seed:Long)(beta:Int) = {
-    new MMAntColonySolver(m, alpha, beta, rho, bestP, seed)
   }
 }
