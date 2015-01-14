@@ -48,8 +48,6 @@ class AntColonySolver(m:Int, alpha:Int, beta:Int, rho:Double, seed:Long) extends
       })
     })
   }
-  // a => {( == i && l1 == l) || (i1 == l && l1 == i)}
-
 
   override def solve(problem: TSPProblem): Array[Int] = {
     println(s"${problem.name}-$seed")
@@ -74,12 +72,15 @@ class AntColonySolver(m:Int, alpha:Int, beta:Int, rho:Double, seed:Long) extends
       distances = distances :+ solution._2
     }
 
+    outputCSV(problem, distances)
+    bestSolution._1
+  }
+
+  def outputCSV(problem: TSPProblem, distances: List[Double]) = {
     val writer = CSVWriter.open(s"results-${problem.name}-$seed.csv")
     writer.writeRow((1 to distances.size).toSeq)
     writer.writeRow(distances.toSeq)
     writer.close()
-
-    bestSolution._1
   }
 
   def initPheromones(problem: TSPProblem) = {

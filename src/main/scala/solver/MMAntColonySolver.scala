@@ -12,13 +12,21 @@ class MMAntColonySolver(m:Int, alpha:Int, beta:Int, rho:Double, bestP:Double, se
   extends AntColonySolver(m:Int, alpha:Int, beta:Int, rho:Double, seed:Long) {
 
   override def refreshPheromone(pheromones: Array[Array[Double]],
-                                pathAndDistances: IndexedSeq[(Array[Int], Double)]): Array[Array[Double]] = {
+                                pathAndDistances: IndexedSeq[(Array[Int], Double)],
+                                 bestSolution: (Array[Int], Double)): Array[Array[Double]] = {
+
+    def slash(value: Double, min: Double, max: Double) = if (value > max) max else if (value < min) min else value
+    val n = pheromones.length
+    val decP = math.pow(bestP, n)
+    val maxT = 1.0 / rho * bestSolution._2
+    val minT = (1 - decP) / (n/2 - 1) * decP * maxT
     val best = pathAndDistances.minBy(_._2)
+
     pheromones.zipWithIndex.map({ case(arr, i) =>
       arr.zipWithIndex.map({ case(p, l) =>
         // τ_ij_best
         val t: Double = if (best._1(i) == l || best._1(l) == i ) 1.0 / _._2 else 0.0
-        (1 - rho) * p + t
+        slash((1 - rho) * p + t, minT, maxT)
       })
     })
   }
@@ -27,5 +35,32 @@ class MMAntColonySolver(m:Int, alpha:Int, beta:Int, rho:Double, bestP:Double, se
     val cityNum = problem.cities.length
     val sampleDistance = Calc.adjacentDis(problem, NNGenerator.adjacent(problem, 0))
     Array.fill(cityNum, cityNum)(m.toDouble / (rho * sampleDistance))
+  }
+
+  override def solve(problem: TSPProblem): Array[Int] = {
+    println(s"${problem.name}-$seed")
+
+    var pheromones = initPheromones(problem)
+    var bestSolution: (Array[Int], Double) = null
+    var distances = List[Double]()
+    var count = 0
+
+    while (count < 1000) {
+      val ants = for(i <- 1 to m) yield createAnt(pheromones, problem)
+      pheromones = refreshPheromone(pheromones, ants, bestSolution)
+
+      val solution = ants.minBy(_._2)
+      if (bestSolution == null || solution._2 < bestSolution._2) {
+        bestSolution = solution
+        count = 0
+      }
+      else {
+        count += 1
+      }
+      distances = distances :+ solution._2
+    }
+
+    outputCSV(problem, distances)
+    bestSolution._1
   }
 }
