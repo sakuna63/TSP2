@@ -53,9 +53,8 @@ class AntColonySolver(m:Int, alpha:Int, beta:Int, rho:Double, seed:Long) extends
 
   override def solve(problem: TSPProblem): Array[Int] = {
     println(s"${problem.name}-$seed")
-    val cityNum = problem.cities.length
-    val sampleDistance = Calc.adjacentDis(problem, NNGenerator.adjacent(problem, 0))
-    var pheromones: Array[Array[Double]] = Array.fill(cityNum, cityNum)(m.toDouble / sampleDistance)
+
+    var pheromones = initPheromones(problem)
     var bestSolution: (Array[Int], Double) = null
     var distances = List[Double]()
     var count = 0
@@ -81,6 +80,12 @@ class AntColonySolver(m:Int, alpha:Int, beta:Int, rho:Double, seed:Long) extends
     writer.close()
 
     bestSolution._1
+  }
+
+  def initPheromones(problem: TSPProblem) = {
+    val cityNum = problem.cities.length
+    val sampleDistance = Calc.adjacentDis(problem, NNGenerator.adjacent(problem, 0))
+    Array.fill(cityNum, cityNum)(m.toDouble / sampleDistance)
   }
 
   def createAnt(pheromones: Array[Array[Double]], problem: TSPProblem): (Array[Int], Double) = {

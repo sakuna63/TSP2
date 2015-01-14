@@ -1,11 +1,14 @@
 package solver
 
+import common.{Calc, TSPProblem}
+import generator.NNGenerator
+
 import scala.collection.immutable.IndexedSeq
 
 /**
  * Created by sakuna63 on 1/14/15.
  */
-class MMAntColonySolver(m:Int, alpha:Int, beta:Int, rho:Double, seed:Long)
+class MMAntColonySolver(m:Int, alpha:Int, beta:Int, rho:Double, bestP:Double, seed:Long)
   extends AntColonySolver(m:Int, alpha:Int, beta:Int, rho:Double, seed:Long) {
 
   override def refreshPheromone(pheromones: Array[Array[Double]],
@@ -18,5 +21,11 @@ class MMAntColonySolver(m:Int, alpha:Int, beta:Int, rho:Double, seed:Long)
         (1 - rho) * p + t
       })
     })
+  }
+
+  override def initPheromones(problem: TSPProblem): Array[Array[Double]] = {
+    val cityNum = problem.cities.length
+    val sampleDistance = Calc.adjacentDis(problem, NNGenerator.adjacent(problem, 0))
+    Array.fill(cityNum, cityNum)(m.toDouble / (rho * sampleDistance))
   }
 }
