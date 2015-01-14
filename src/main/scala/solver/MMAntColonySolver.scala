@@ -57,7 +57,7 @@ class MMAntColonySolver(m:Int, alpha:Int, beta:Int, rho:Double, bestP:Double, se
       else {
         count += 1
       }
-      distances = distances :+ solution._2
+      distances = distances :+ bestSolution._2
     }
 
     outputCSV(problem, distances)

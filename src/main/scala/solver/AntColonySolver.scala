@@ -69,7 +69,7 @@ class AntColonySolver(m:Int, alpha:Int, beta:Int, rho:Double, seed:Long) extends
       else {
         count += 1
       }
-      distances = distances :+ solution._2
+      distances = distances :+ bestSolution._2
     }
 
     outputCSV(problem, distances)
