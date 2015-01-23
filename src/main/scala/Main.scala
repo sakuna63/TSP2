@@ -1,45 +1,25 @@
 import java.io.File
-import java.util.concurrent.CountDownLatch
 
 import com.github.tototoshi.csv.CSVWriter
 import common.{Calc, TSPProblem}
-import generator.NNGenerator
-import solver.{MMAntColonySolver, AntColonySolver, TwoOptSolver}
+import solver.HybridACOSolver
 import scala.concurrent._
 import scala.concurrent.duration.Duration
 import ExecutionContext.Implicits.global
-import scala.runtime.ScalaRunTime._
-
-import scala.io.Source
-import scala.util.Random
 
 /**
  * Created by sakuna63 on 12/23/14.
  */
 object Main {
   val ALPHA = 1
-  val BETA = Array(2,3,4,5)
-  val RHO = 0.2
-  val P_BEST = 0.05
-  val SEEDS = Array[Long](113, 367, 647, 947, 491, 997, 839, 1733, 271, 569)
+  val BETA = 2
+  val RHO = Array[Double](0.01, 0.02, 0.1, 0.2, 0.5, 0.8)
+  val P_BEST = Array[Double](0.001, 0.005, 0.01, 0.05, 0.1, 0.5)
+  val SEED = 113
+  val LOOP = 200
 
   def main(args: Array[String]): Unit = {
     val directory = new File("./samples")
-
-    val eil51 = new File(directory, "eil51.tsp")
-    val problem = new TSPProblem(eil51)
-    val solver = new MMAntColonySolver(problem.cities.length, ALPHA, _:Int, RHO, P_BEST, SEEDS(0))
-    var betaResults = List[(Int, Int)]()
-    val futures = for (beta <- BETA) yield
-      Future {
-        (beta, Calc.adjacentDis(problem, solver(beta).solve(problem)))
-      }
-    futures.foreach(f => betaResults = betaResults :+ Await.result(f, Duration.Inf))
-    write("beta.csv", betaResults.map(_.productIterator.toSeq))
-
-    val optimalBeta = betaResults.minBy(_._2)._1
-
-    println(s"optimal beta is $optimalBeta")
 
     val results = for (f <- directory.listFiles()) yield {
       def average(distances: Array[Int]) = distances.sum.toDouble / distances.size
@@ -49,22 +29,27 @@ object Main {
       }
 
       val problem = new TSPProblem(f)
-      val solver = new MMAntColonySolver(problem.cities.length, ALPHA, optimalBeta, RHO, P_BEST, _:Long)
+      val const = new HybridACOSolver(problem.cities.length, ALPHA, BETA, _:Double, _:Double, SEED, LOOP)
 
-      var result = List[(Int, Long)]()
-      val futures = for (seed <- SEEDS) yield
-        Future {
-          (Calc.adjacentDis(problem, solver(seed).solve(problem)), seed)
-        }
-      futures.foreach(f => result = result :+ Await.result(f, Duration.Inf))
+      val futures =
+        for (rho <- RHO) yield
+          for (bestP <- P_BEST) yield
+            Future {
+              val solver = const(rho, bestP)
+              (solver, Calc.adjacentDis(problem, solver.solve(problem)))
+            }
 
-      val optimalSeed = result.minBy(_._1)._2
-      val distances = result.map(_._1).toArray
+      var result = List[(HybridACOSolver, Int)]()
+      futures.flatten.foreach(f => result = result :+ Await.result(f, Duration.Inf))
 
-      (problem.name, optimalSeed, distances.max, distances.min, average(distances), standardDeviation(distances))
+      val optimalRho = result.minBy(_._2)._1.rho
+      val optimalP = result.minBy(_._2)._1.bestP
+      val distances = result.map(_._2).toArray
+
+      (problem.name, optimalRho, optimalP, distances.max, distances.min, average(distances), standardDeviation(distances))
     }
 
-    write("result.csv", results.map(_.productIterator.toSeq))
+   write("result.csv", results.map(_.productIterator.toSeq))
   }
 
   def write(name:String, result:Seq[Seq[Any]]) = {
