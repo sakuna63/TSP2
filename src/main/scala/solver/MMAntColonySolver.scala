@@ -12,8 +12,8 @@ class MMAntColonySolver(m:Int, alpha:Int, beta:Int, rho:Double, val bestP:Double
   extends AntColonySolver(m, alpha, beta, rho, seed, loopCount) {
 
   def refreshPheromone(pheromones: Array[Array[Double]],
-                       pathAndDistances: IndexedSeq[(Array[Int], Double)],
-                       bestSolution: (Array[Int], Double)): Array[Array[Double]] = {
+                       pathAndDistances: IndexedSeq[(Array[Int], Int)],
+                       bestSolution: (Array[Int], Int)): Array[Array[Double]] = {
 
     def slash(value: Double, min: Double, max: Double) = if (value > max) max else if (value < min) min else value
     val n = pheromones.length
@@ -41,8 +41,8 @@ class MMAntColonySolver(m:Int, alpha:Int, beta:Int, rho:Double, val bestP:Double
     println(s"${problem.name}-$seed")
 
     var pheromones = initPheromones(problem)
-    var bestSolution: (Array[Int], Double) = null
-    var distances = List[Double]()
+    var bestSolution: (Array[Int], Int) = null
+    var distances = List[Int]()
     var count = 0
 
     while (count < loopCount) {

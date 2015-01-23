@@ -37,7 +37,7 @@ class AntColonySolver(val m:Int, val alpha:Int, val beta:Int, val rho:Double, va
     throw new IllegalArgumentException("fail")
   }
 
-  def refreshPheromone(pheromones: Array[Array[Double]], pathAndDistances: IndexedSeq[(Array[Int], Double)]): Array[Array[Double]] = {
+  def refreshPheromone(pheromones: Array[Array[Double]], pathAndDistances: IndexedSeq[(Array[Int], Int)]): Array[Array[Double]] = {
     pheromones.zipWithIndex.map({ case(arr, i) =>
       arr.zipWithIndex.map({ case(p, l) =>
         val sum = pathAndDistances
@@ -53,8 +53,8 @@ class AntColonySolver(val m:Int, val alpha:Int, val beta:Int, val rho:Double, va
     println(s"${problem.name}-$seed")
 
     var pheromones = initPheromones(problem)
-    var bestSolution: (Array[Int], Double) = null
-    var distances = List[Double]()
+    var bestSolution: (Array[Int], Int) = null
+    var distances = List[Int]()
     var count = 0
 
     while (count < loopCount) {
@@ -79,7 +79,7 @@ class AntColonySolver(val m:Int, val alpha:Int, val beta:Int, val rho:Double, va
     bestSolution._1
   }
 
-  def outputCSV(problem: TSPProblem, distances: List[Double]) = {
+  def outputCSV(problem: TSPProblem, distances: List[Int]) = {
     val writer = CSVWriter.open(s"results-${problem.name}-$seed.csv")
     writer.writeRow((1 to distances.size).toSeq)
     writer.writeRow(distances.toSeq)
