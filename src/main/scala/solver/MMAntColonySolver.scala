@@ -8,8 +8,8 @@ import scala.collection.immutable.IndexedSeq
 /**
  * Created by sakuna63 on 1/14/15.
  */
-class MMAntColonySolver(m:Int, alpha:Int, beta:Int, rho:Double, bestP:Double, seed:Long)
-  extends AntColonySolver(m:Int, alpha:Int, beta:Int, rho:Double, seed:Long) {
+class MMAntColonySolver(m:Int, alpha:Int, beta:Int, rho:Double, val bestP:Double, seed:Long, loopCount:Int)
+  extends AntColonySolver(m, alpha, beta, rho, seed, loopCount) {
 
   def refreshPheromone(pheromones: Array[Array[Double]],
                        pathAndDistances: IndexedSeq[(Array[Int], Double)],
@@ -45,8 +45,8 @@ class MMAntColonySolver(m:Int, alpha:Int, beta:Int, rho:Double, bestP:Double, se
     var distances = List[Double]()
     var count = 0
 
-    while (count < 1000) {
       val ants = for(i <- 1 to m) yield createAnt(pheromones, problem)
+    while (count < loopCount) {
 
       val solution = ants.minBy(_._2)
       if (bestSolution == null || solution._2 < bestSolution._2) {

@@ -11,7 +11,7 @@ import scala.util.Random
 /**
  * Created by sakuna63 on 1/7/15.
  */
-class AntColonySolver(m:Int, alpha:Int, beta:Int, rho:Double, seed:Long) extends Solver {
+class AntColonySolver(val m:Int, val alpha:Int, val beta:Int, val rho:Double, val seed:Long, val loopCount:Int) extends Solver {
   val rnd = new Random(seed)
 
   def toProbabilities(pheromones: Array[Double], selectedCities: Array[Int], distances: Array[Int]): Array[(Double, Int)] = {
@@ -57,8 +57,8 @@ class AntColonySolver(m:Int, alpha:Int, beta:Int, rho:Double, seed:Long) extends
     var distances = List[Double]()
     var count = 0
 
-    while (count < 1000) {
       val ants = for(i <- 1 to m) yield createAnt(pheromones, problem)
+    while (count < loopCount) {
       pheromones = refreshPheromone(pheromones, ants)
 
       val solution = ants.minBy(_._2)
