@@ -67,4 +67,6 @@ class MMAntColonySolver(m:Int, alpha:Int, beta:Int, rho:Double, val bestP:Double
     outputCSV(problem, distances)
     bestSolution._1
   }
+
+  override def toString: String = super.toString
 }

@@ -12,6 +12,7 @@ import scala.util.Random
  * Created by sakuna63 on 12/23/14.
  */
 object Main {
+  val M = 25
   val ALPHA = 1
   val BETA = 2
   val RHO = Array[Double](0.01, 0.02, 0.1, 0.2, 0.5, 0.8)
@@ -31,18 +32,19 @@ object Main {
       }
 
       val problem = new TSPProblem(f)
-      val const = new HybridACOSolver(problem.cities.length, ALPHA, BETA, _:Double, _:Double, RND, LOOP)
+      val const = new HybridACOSolver(M, ALPHA, BETA, _:Double, _:Double, RND, LOOP)
 
       val futures =
-        for (rho <- RHO) yield
-          for (bestP <- P_BEST) yield
-            Future {
-              val solver = const(rho, bestP)
-              (solver, Calc.adjacentDis(problem, solver.solve(problem)))
-            }
+        for (i <- 1 to 10) yield
+          for (rho <- RHO) yield
+            for (bestP <- P_BEST) yield
+              Future {
+                val solver = const(rho, bestP)
+                (solver, Calc.adjacentDis(problem, solver.solve(problem)))
+              }
 
       var result = List[(HybridACOSolver, Int)]()
-      futures.flatten.foreach(f => result = result :+ Await.result(f, Duration.Inf))
+      futures.flatten.flatten.foreach(f => result = result :+ Await.result(f, Duration.Inf))
 
       val optimalHash = result.minBy(_._2)._1.hashCode()
       val optimalRho = result.minBy(_._2)._1.rho
