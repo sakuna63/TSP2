@@ -57,8 +57,11 @@ class AntColonySolver(val m:Int, val alpha:Int, val beta:Int, val rho:Double, va
     var distances = List[Double]()
     var count = 0
 
-      val ants = for(i <- 1 to m) yield createAnt(pheromones, problem)
     while (count < loopCount) {
+      val ants = for(i <- 1 to m) yield {
+        val path = createAntPath(pheromones, problem)
+        (path, Calc.adjacentDis(problem, path))
+      }
       pheromones = refreshPheromone(pheromones, ants)
 
       val solution = ants.minBy(_._2)
@@ -89,7 +92,7 @@ class AntColonySolver(val m:Int, val alpha:Int, val beta:Int, val rho:Double, va
     Array.fill(cityNum, cityNum)(m.toDouble / sampleDistance)
   }
 
-  def createAnt(pheromones: Array[Array[Double]], problem: TSPProblem): (Array[Int], Double) = {
+  def createAntPath(pheromones: Array[Array[Double]], problem: TSPProblem): Array[Int] = {
     val cityNum = problem.cities.length
     val path = Array.fill(cityNum)(-1)
     val start = rnd.nextInt(cityNum)
@@ -100,6 +103,6 @@ class AntColonySolver(val m:Int, val alpha:Int, val beta:Int, val rho:Double, va
       base = city
     })
     path(base) = start
-    (path, Calc.adjacentDis(problem, path))
+    path
   }
 }

@@ -45,8 +45,11 @@ class MMAntColonySolver(m:Int, alpha:Int, beta:Int, rho:Double, val bestP:Double
     var distances = List[Double]()
     var count = 0
 
-      val ants = for(i <- 1 to m) yield createAnt(pheromones, problem)
     while (count < loopCount) {
+      val ants = for(i <- 1 to m) yield {
+        val path = createAntPath(pheromones, problem)
+        (path, Calc.adjacentDis(problem, path))
+      }
 
       val solution = ants.minBy(_._2)
       if (bestSolution == null || solution._2 < bestSolution._2) {
