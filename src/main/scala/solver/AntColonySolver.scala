@@ -11,8 +11,7 @@ import scala.util.Random
 /**
  * Created by sakuna63 on 1/7/15.
  */
-class AntColonySolver(val m:Int, val alpha:Int, val beta:Int, val rho:Double, val seed:Long, val loopCount:Int) extends Solver {
-  val rnd = new Random(seed)
+class AntColonySolver(val m:Int, val alpha:Int, val beta:Int, val rho:Double, val rnd:Random, val loopCount:Int) extends Solver {
 
   def toProbabilities(pheromones: Array[Double], selectedCities: Array[Int], distances: Array[Int]): Array[(Double, Int)] = {
     pheromones.zipWithIndex
@@ -50,7 +49,7 @@ class AntColonySolver(val m:Int, val alpha:Int, val beta:Int, val rho:Double, va
   }
 
   override def solve(problem: TSPProblem): Array[Int] = {
-    println(s"${problem.name}-$seed")
+    println(s"${problem.name}-$hashCode()")
 
     var pheromones = initPheromones(problem)
     var bestSolution: (Array[Int], Int) = null
@@ -80,7 +79,7 @@ class AntColonySolver(val m:Int, val alpha:Int, val beta:Int, val rho:Double, va
   }
 
   def outputCSV(problem: TSPProblem, distances: List[Int]) = {
-    val writer = CSVWriter.open(s"results-${problem.name}-$seed.csv")
+    val writer = CSVWriter.open(s"results-${problem.name}-$hashCode().csv")
     writer.writeRow((1 to distances.size).toSeq)
     writer.writeRow(distances.toSeq)
     writer.close()

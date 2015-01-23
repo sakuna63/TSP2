@@ -6,6 +6,7 @@ import solver.HybridACOSolver
 import scala.concurrent._
 import scala.concurrent.duration.Duration
 import ExecutionContext.Implicits.global
+import scala.util.Random
 
 /**
  * Created by sakuna63 on 12/23/14.
@@ -16,6 +17,7 @@ object Main {
   val RHO = Array[Double](0.01, 0.02, 0.1, 0.2, 0.5, 0.8)
   val P_BEST = Array[Double](0.001, 0.005, 0.01, 0.05, 0.1, 0.5)
   val SEED = 113
+  val RND = new Random(SEED)
   val LOOP = 200
 
   def main(args: Array[String]): Unit = {
@@ -29,7 +31,7 @@ object Main {
       }
 
       val problem = new TSPProblem(f)
-      val const = new HybridACOSolver(problem.cities.length, ALPHA, BETA, _:Double, _:Double, SEED, LOOP)
+      val const = new HybridACOSolver(problem.cities.length, ALPHA, BETA, _:Double, _:Double, RND, LOOP)
 
       val futures =
         for (rho <- RHO) yield
@@ -42,11 +44,12 @@ object Main {
       var result = List[(HybridACOSolver, Int)]()
       futures.flatten.foreach(f => result = result :+ Await.result(f, Duration.Inf))
 
+      val optimalHash = result.minBy(_._2)._1.hashCode()
       val optimalRho = result.minBy(_._2)._1.rho
       val optimalP = result.minBy(_._2)._1.bestP
       val distances = result.map(_._2).toArray
 
-      (problem.name, optimalRho, optimalP, distances.max, distances.min, average(distances), standardDeviation(distances))
+      (problem.name, optimalHash, optimalRho, optimalP, distances.max, distances.min, average(distances), standardDeviation(distances))
     }
 
    write("result.csv", results.map(_.productIterator.toSeq))

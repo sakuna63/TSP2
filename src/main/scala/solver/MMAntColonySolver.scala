@@ -4,12 +4,13 @@ import common.{Calc, TSPProblem}
 import generator.NNGenerator
 
 import scala.collection.immutable.IndexedSeq
+import scala.util.Random
 
 /**
  * Created by sakuna63 on 1/14/15.
  */
-class MMAntColonySolver(m:Int, alpha:Int, beta:Int, rho:Double, val bestP:Double, seed:Long, loopCount:Int)
-  extends AntColonySolver(m, alpha, beta, rho, seed, loopCount) {
+class MMAntColonySolver(m:Int, alpha:Int, beta:Int, rho:Double, val bestP:Double, rnd:Random,  loopCount:Int)
+  extends AntColonySolver(m, alpha, beta, rho, rnd, loopCount) {
 
   def refreshPheromone(pheromones: Array[Array[Double]],
                        pathAndDistances: IndexedSeq[(Array[Int], Int)],
@@ -38,7 +39,7 @@ class MMAntColonySolver(m:Int, alpha:Int, beta:Int, rho:Double, val bestP:Double
   }
 
   override def solve(problem: TSPProblem): Array[Int] = {
-    println(s"${problem.name}-$seed")
+    println(s"${problem.name}-$hashCode()")
 
     var pheromones = initPheromones(problem)
     var bestSolution: (Array[Int], Int) = null
