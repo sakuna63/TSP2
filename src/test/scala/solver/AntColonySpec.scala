@@ -5,6 +5,8 @@ import java.io.File
 import common.TSPProblem
 import org.scalatest._
 
+import scala.util.Random
+
 /**
  * Created by sakuna63 on 1/9/15.
  */
@@ -14,7 +16,7 @@ class AntColonySpec extends FlatSpec with Matchers {
     val file = new File("./samples/eil51.tsp")
     val problem = new TSPProblem(file)
     val cityNum = problem.cities.length
-    val solver = new AntColonySolver(cityNum, 1, 2, 0.5, 113)
+    val solver = new AntColonySolver(cityNum, 1, 2, 0.5, new Random(113), 1000)
     val pheromones = Array.fill(cityNum, cityNum)(0.5)
     val distances = Array.fill(cityNum, cityNum)(10)
     val selectedCities = Array(1,2,3)
@@ -61,9 +63,9 @@ class AntColonySpec extends FlatSpec with Matchers {
       val problem = new TSPProblem(f)
       val cityNum = problem.cities.length
       val pheromones = Array.fill(cityNum, cityNum)(0.5)
-      val result = new AntColonySolver(cityNum, 1, 2, 0.5, 113).createAnt(pheromones, problem)
+      val result = new AntColonySolver(cityNum, 1, 2, 0.5, new Random(113), 1000).createAntPath(pheromones, problem)
 
-      result._1.distinct.size should be (result._1.size)
+      result.distinct.size should be (result.size)
     })
   }
 }
