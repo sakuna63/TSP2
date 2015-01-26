@@ -20,7 +20,7 @@ class TSPProblem(file: File) {
       .filter(correctLineFormat)
       .foreach( l => {
         val line: Array[String] = l.split(" ").filter(!_.isEmpty)
-        cities = (line(1).toDouble, line(2).toDouble) :: cities
+        cities = cities :+ (line(1).toDouble, line(2).toDouble)
       })
     cities.toArray
   }
