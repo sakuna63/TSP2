@@ -34,7 +34,7 @@ class MMAntColonySolver(m:Int, alpha:Int, beta:Int, rho:Double, val bestP:Double
 
   override def initPheromones(problem: TSPProblem): Array[Array[Double]] = {
     val cityNum = problem.cities.length
-    val sampleDistance = Calc.adjacentDis(problem, NNGenerator.adjacent(problem, 0))
+    val sampleDistance = Calc.adjacentDis(problem.distance, NNGenerator.adjacent(problem, 0))
     Array.fill(cityNum, cityNum)(m.toDouble / (rho * sampleDistance))
   }
 
@@ -49,7 +49,7 @@ class MMAntColonySolver(m:Int, alpha:Int, beta:Int, rho:Double, val bestP:Double
     while (count < loopCount) {
       val ants = for(i <- 1 to m) yield {
         val path = createAntPath(pheromones, problem)
-        (path, Calc.adjacentDis(problem, path))
+        (path, Calc.adjacentDis(problem.distance, path))
       }
 
       val solution = ants.minBy(_._2)

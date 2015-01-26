@@ -40,7 +40,7 @@ object Main {
             for (bestP <- P_BEST) yield
               Future {
                 val solver = const(rho, bestP)
-                (solver, Calc.adjacentDis(problem, solver.solve(problem)))
+                (solver, Calc.adjacentDis(problem.distance, solver.solve(problem)))
               }
 
       var result = List[(HybridACOSolver, Int)]()

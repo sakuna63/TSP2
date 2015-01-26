@@ -59,7 +59,7 @@ class AntColonySolver(val m:Int, val alpha:Int, val beta:Int, val rho:Double, va
     while (count < loopCount) {
       val ants = for(i <- 1 to m) yield {
         val path = createAntPath(pheromones, problem)
-        (path, Calc.adjacentDis(problem, path))
+        (path, Calc.adjacentDis(problem.distance, path))
       }
       pheromones = refreshPheromone(pheromones, ants)
 
@@ -87,7 +87,7 @@ class AntColonySolver(val m:Int, val alpha:Int, val beta:Int, val rho:Double, va
 
   def initPheromones(problem: TSPProblem) = {
     val cityNum = problem.cities.length
-    val sampleDistance = Calc.adjacentDis(problem, NNGenerator.adjacent(problem, 0))
+    val sampleDistance = Calc.adjacentDis(problem.distance, NNGenerator.adjacent(problem, 0))
     Array.fill(cityNum, cityNum)(m.toDouble / sampleDistance)
   }
 

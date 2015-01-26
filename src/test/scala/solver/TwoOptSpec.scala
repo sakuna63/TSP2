@@ -18,9 +18,9 @@ class TwoOptSpec extends FlatSpec with Matchers {
     directory.listFiles().foreach(f => {
       val problem = new TSPProblem(f)
       val nn = NNGenerator.adjacent(problem, 0)
-      println(Calc.adjacentDis(problem, nn))
+      println(Calc.adjacentDis(problem.distance, nn))
       val result = new TwoOptSolver(nn).solve(problem)
-      println(Calc.adjacentDis(problem, result))
+      println(Calc.adjacentDis(problem.distance, result))
 
       result.distinct.size should be (result.size)
     })
