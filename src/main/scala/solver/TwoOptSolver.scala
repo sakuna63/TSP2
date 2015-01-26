@@ -17,8 +17,20 @@ class TwoOptSolver(path: Array[Int]) extends Solver {
         val i2 = path(i1)
         val l = seekBestPathToExchange(problem, i1, i2)
         l foreach (l => {
-          path(i1) = l._2
-          path(l._1) = i2
+
+          // つなぎ替え
+          var from = i2
+          var to = path(from)
+          while (from != l._1) {
+            val tempTo = path(to)
+            path(to) = from
+            from = to
+            to = tempTo
+          }
+
+          path(i1) = l._1
+          path(i2) = l._2
+
           count += 1
         })
       }
@@ -36,8 +48,8 @@ class TwoOptSolver(path: Array[Int]) extends Solver {
       if (i1 != l2 && l1 != i2) {
         val disOld1 = problem.distance(i1)(i2)
         val disOld2 = problem.distance(l1)(l2)
-        val disNew1 = problem.distance(i1)(l2)
-        val disNew2 = problem.distance(l1)(i2)
+        val disNew1 = problem.distance(i1)(l1)
+        val disNew2 = problem.distance(i2)(l2)
         if (disOld1 + disOld2 > disNew1 + disNew2 && bestPathToExchange._2 > disNew1 + disNew2) {
           bestPathToExchange = ((l1, l2), disNew1 + disNew2)
         }
