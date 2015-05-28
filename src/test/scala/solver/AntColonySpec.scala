@@ -2,7 +2,7 @@ package solver
 
 import java.io.File
 
-import common.TSPProblem
+import common.{TSPProblem}
 import org.scalatest._
 
 import scala.util.Random

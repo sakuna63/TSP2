@@ -96,6 +96,7 @@ class AntColonySolver(val m:Int, val alpha:Int, val beta:Int, val rho:Double, va
     val path = Array.fill(cityNum)(-1)
     val start = rnd.nextInt(cityNum)
     var base = start
+
     1 until cityNum foreach (_ => {
       val city = selectRoute(base, path.filter(_ != -1) :+ start, pheromones, problem.distance)
       path(base) = city
